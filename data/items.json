@@ -14,13 +14,5 @@
         "imgs": [
             "2.webp"
         ]
-    },
-    {
-        "id": 3,
-        "name": "23\" Monitor",
-        "desc": "1080p IPS, includes HDMI cable.",
-        "imgs": [
-            "3.webp"
-        ]
     }
 ]
