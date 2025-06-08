@@ -4,8 +4,7 @@
         "name": "Wooden Desk",
         "desc": "Solid oak, 120 × 60 cm, minor scratch on top.",
         "imgs": [
-            "desk1.webp",
-            "desk2.webp"
+            "1.webp"
         ]
     },
     {
@@ -13,7 +12,7 @@
         "name": "Gaming Chair",
         "desc": "Ergonomic, adjustable height, like new.",
         "imgs": [
-            "chair1.webp"
+            "2.webp"
         ]
     },
     {
@@ -21,7 +20,7 @@
         "name": "23\" Monitor",
         "desc": "1080p IPS, includes HDMI cable.",
         "imgs": [
-            "monitor1.webp"
+            "3.webp"
         ]
     }
 ]
