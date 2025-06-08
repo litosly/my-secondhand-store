@@ -4,7 +4,7 @@
         "name": "Wooden Desk",
         "desc": "Solid oak, 120 × 60 cm, minor scratch on top.",
         "imgs": [
-            "images/1.webp"
+            "images/webp/1.webp"
         ]
     },
     {
@@ -12,7 +12,15 @@
         "name": "Gaming Chair",
         "desc": "Ergonomic, adjustable height, like new.",
         "imgs": [
-            "images/2.webp"
+            "images/webp/2.webp"
+        ]
+    },
+    {
+        "id": 3,
+        "name": "TEST",
+        "desc": "Ergonomic, adjustable height, like new.",
+        "imgs": [
+            "images/webp/3.webp"
         ]
     }
 ]

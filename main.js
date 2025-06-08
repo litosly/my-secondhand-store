@@ -20,7 +20,7 @@ function render(items) {
         card.className = 'card';
         const firstImage = item.imgs[0];
         card.innerHTML = `
-        <img src="images/${firstImage}" alt="${item.name}" loading="lazy" />
+        <img src="${firstImage}" alt="${item.name}" loading="lazy" />
         <div class="body">
           <h3>${item.name}</h3>
           <p>${item.desc}</p>
@@ -40,7 +40,7 @@ function openLightbox(item) {
     overlay.addEventListener('click', () => overlay.remove());
 
     const img = document.createElement('img');
-    img.src = `images/${item.imgs[0]}`;
+    img.src = item.imgs[0];
     img.style.maxWidth = '90vw';
     img.style.maxHeight = '90vh';
     overlay.appendChild(img);
