@@ -81,3 +81,141 @@ footer h2 {
 footer p {
     font-size: .95rem;
 }
+
+/* CRUD button styles */
+.edit-btn,
+.delete-btn,
+.add-item-btn {
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+
+.edit-btn {
+    background-color: #4CAF50; /* Green */
+}
+
+.edit-btn:hover {
+    background-color: #45a049;
+}
+
+.delete-btn {
+    background-color: #f44336; /* Red */
+}
+
+.delete-btn:hover {
+    background-color: #d32f2f;
+}
+
+.add-item-btn {
+    background-color: #2196F3; /* Blue */
+    margin: 15px auto 0;
+    display: block;
+    padding: 10px 16px;
+}
+
+.add-item-btn:hover {
+    background-color: #0b7dda;
+}
+
+.card-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.form-group label {
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+button.cancel-btn,
+button.save-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button.cancel-btn {
+    background-color: #f44336;
+    color: white;
+}
+
+button.save-btn {
+    background-color: #2196F3;
+    color: white;
+}
+
+/* Image preview and upload styles */
+.image-preview-container {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+    border: 1px dashed #ccc;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+.image-preview {
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+}
+
+.image-input {
+    margin: 10px 0;
+}
+
+.upload-progress {
+    background-color: #f1f1f1;
+    padding: 5px 10px;
+    border-radius: 4px;
+    margin-top: 5px;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.image-help {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 5px;
+    font-style: italic;
+}

@@ -1,0 +1,13 @@
+{
+  "name": "second-hand-item",
+  "version": "1.0.0",
+  "description": "Second-hand store with update functionality",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "multer": "^2.0.1"
+  }
+}

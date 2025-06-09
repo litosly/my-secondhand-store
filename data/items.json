@@ -16,11 +16,11 @@
         ]
     },
     {
-        "id": 3,
-        "name": "TEST",
-        "desc": "Ergonomic, adjustable height, like new.",
+        "name": "TEST 3",
+        "desc": "test create ",
         "imgs": [
-            "images/webp/3.webp"
-        ]
+            "images/webp/1749436913768-193295000.webp"
+        ],
+        "id": 3
     }
 ]
