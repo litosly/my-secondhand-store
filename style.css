@@ -219,3 +219,60 @@ button.save-btn {
     margin-top: 5px;
     font-style: italic;
 }
+
+/* Authentication styles */
+.auth-container {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.login-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.login-form input {
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.login-form button,
+#logout-button {
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.user-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-role-tag {
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.user-role-tag.admin {
+    background-color: #ff9800;
+    color: white;
+}
+
+.hidden {
+    display: none !important;
+}

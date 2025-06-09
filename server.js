@@ -1,11 +1,20 @@
 const express = require('express');
-const fs = require('fs/promises');
+const fs = require('fs').promises;
 const path = require('path');
 const multer = require('multer');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const cookieParser = require('cookie-parser');
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000;
 
-// Configure multer for file uploads
+const ITEMS_FILE = path.join(__dirname, 'data', 'items.json');
+const USERS_FILE = path.join(__dirname, 'data', 'users.json');
+
+// JWT secret key (in production, use environment variables)
+const JWT_SECRET = 'your-secret-key-should-be-long-and-secure';
+const JWT_EXPIRY = '24h';
+
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, path.join(__dirname, 'images/webp'));
@@ -35,23 +44,30 @@ const upload = multer({
 // Middleware
 app.use(express.json());
 app.use(express.static('.'));  // Serve static files from current directory
+app.use(cookieParser());
 
-// Helper function to read items file
+// Helper functions for reading data files
 async function readItems() {
-  const data = await fs.readFile(path.join(__dirname, 'data/items.json'), 'utf8');
+  const data = await fs.readFile(ITEMS_FILE, 'utf8');
   return JSON.parse(data);
 }
 
-// Helper function to write items file
+async function readUsers() {
+  const data = await fs.readFile(USERS_FILE, 'utf8');
+  return JSON.parse(data);
+}
+
+// Helper functions for writing data files
 async function writeItems(items) {
-  await fs.writeFile(
-    path.join(__dirname, 'data/items.json'),
-    JSON.stringify(items, null, 4)
-  );
+  await fs.writeFile(ITEMS_FILE, JSON.stringify(items, null, 4));
+}
+
+async function writeUsers(users) {
+  await fs.writeFile(USERS_FILE, JSON.stringify(users, null, 4));
 }
 
 // Get all items
-app.get('/api/items', async (req, res) => {
+app.get('/api/items', authenticateToken, async (req, res) => {
   try {
     const items = await readItems();
     res.json(items);
@@ -62,7 +78,7 @@ app.get('/api/items', async (req, res) => {
 });
 
 // Get single item by ID
-app.get('/api/items/:id', async (req, res) => {
+app.get('/api/items/:id', authenticateToken, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const items = await readItems();
@@ -78,7 +94,7 @@ app.get('/api/items/:id', async (req, res) => {
 });
 
 // Image upload endpoint
-app.post('/api/upload', upload.single('image'), (req, res) => {
+app.post('/api/upload', authenticateToken, requireAuth, upload.single('image'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
@@ -95,7 +111,7 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
 });
 
 // Create a new item
-app.post('/api/items', async (req, res) => {
+app.post('/api/items', authenticateToken, requireAuth, async (req, res) => {
   try {
     console.log('POST /api/items received:', req.body);
     const newItem = req.body;
@@ -108,6 +124,10 @@ app.post('/api/items', async (req, res) => {
     if (!newItem.imgs || !newItem.imgs.length) {
       newItem.imgs = ['images/webp/placeholder.webp'];
     }
+    
+    // Set owner information from authenticated user
+    newItem.owner = req.user.id;
+    newItem.created = new Date().toISOString();
     
     const items = await readItems();
     
@@ -127,7 +147,7 @@ app.post('/api/items', async (req, res) => {
 });
 
 // Update an item
-app.put('/api/items/:id', async (req, res) => {
+app.put('/api/items/:id', authenticateToken, requireAuth, checkItemOwnership, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const updatedItem = req.body;
@@ -150,7 +170,7 @@ app.put('/api/items/:id', async (req, res) => {
 });
 
 // Delete an item
-app.delete('/api/items/:id', async (req, res) => {
+app.delete('/api/items/:id', authenticateToken, requireAuth, checkItemOwnership, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     console.log('DELETE /api/items/:id received for ID:', id);
@@ -178,6 +198,121 @@ app.delete('/api/items/:id', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+// Authentication endpoints
+app.post('/api/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password required' });
+    }
+    
+    const users = await readUsers();
+    const user = users.find(u => u.username === username);
+    
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    
+    // Create JWT token
+    const token = jwt.sign(
+      { id: user.id, username: user.username, role: user.role },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRY }
+    );
+    
+    // Set cookie and send response
+    res.cookie('token', token, { 
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    });
+    
+    // Return user info (exclude password)
+    const { password: _, ...userWithoutPassword } = user;
+    res.json({ user: userWithoutPassword, message: 'Login successful' });
+  } catch (err) {
+    console.error('Login error:', err);
+    res.status(500).json({ error: 'Authentication failed' });
+  }
+});
+
+app.get('/api/logout', (req, res) => {
+  res.clearCookie('token');
+  res.json({ message: 'Logged out successfully' });
+});
+
+app.get('/api/current-user', authenticateToken, async (req, res) => {
+  try {
+    const users = await readUsers();
+    const user = users.find(u => u.id === req.user.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    
+    // Return user info (exclude password)
+    const { password: _, ...userWithoutPassword } = user;
+    res.json(userWithoutPassword);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to retrieve user' });
+  }
+});
+
+// Authentication middleware
+function authenticateToken(req, res, next) {
+  const token = req.cookies.token;
+  
+  if (!token) {
+    req.user = null;
+    return next();
+  }
+  
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) {
+      console.error('JWT verification error:', err);
+      req.user = null;
+    } else {
+      req.user = user;
+    }
+    next();
+  });
+}
+
+// Authorization middleware
+function requireAuth(req, res, next) {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+  next();
+}
+
+// Authorization middleware to check item ownership
+function checkItemOwnership(req, res, next) {
+  if (req.user.role === 'admin') {
+    // Admins can edit/delete any item
+    return next();
+  }
+  
+  const itemId = parseInt(req.params.id);
+  readItems().then(items => {
+    const item = items.find(item => parseInt(item.id) === itemId);
+    if (!item) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+    
+    if (item.owner !== req.user.id) {
+      return res.status(403).json({ error: 'You do not have permission to modify this item' });
+    }
+    
+    next();
+  }).catch(err => {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  });
+}
+
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
 });

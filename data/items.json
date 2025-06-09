@@ -5,7 +5,9 @@
         "desc": "Solid oak, 120 × 60 cm, minor scratch on top.",
         "imgs": [
             "images/webp/1.webp"
-        ]
+        ],
+        "owner": 1,
+        "created": "2025-06-01T12:00:00Z"
     },
     {
         "id": 2,
@@ -13,14 +15,28 @@
         "desc": "Ergonomic, adjustable height, like new.",
         "imgs": [
             "images/webp/2.webp"
-        ]
+        ],
+        "owner": 2,
+        "created": "2025-06-02T14:30:00Z"
     },
     {
+        "id": 3,
         "name": "TEST 3",
         "desc": "test create ",
         "imgs": [
             "images/webp/1749436913768-193295000.webp"
         ],
-        "id": 3
+        "owner": 3,
+        "created": "2025-06-08T10:15:00Z"
+    },
+    {
+        "name": "Test admin create",
+        "desc": "admin created",
+        "imgs": [
+            "images/webp/placeholder.webp"
+        ],
+        "owner": 1,
+        "created": "2025-06-09T03:23:04.948Z",
+        "id": 4
     }
 ]
